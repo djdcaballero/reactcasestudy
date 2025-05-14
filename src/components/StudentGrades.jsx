@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -70,10 +71,11 @@ const StudentGradesList = () => {
         }
     };
 
+
     const openAddPopup = () => {
-        setCurrentStudent({ studentId: '', name: '', grades: [] });
-        setShowAddPopup(true);
+        navigate('/create-student');
     };
+
 
     const openUpdatePopup = (student) => {
         setCurrentStudent(student);
