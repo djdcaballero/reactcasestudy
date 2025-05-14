@@ -93,7 +93,7 @@ function AddStudents() {
 							<div className="form-group">
 								<label htmlFor={`grade-${index}`}>Grade:</label>
 								<input
-								type="text"
+								type="number"
 								id={`grade-${index}`}
 								name={`grade-${index}`}
 								value={row.grade}

@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const StudentRecord = ({ student }) => {
+// StudentRecord Component
+const StudentRecord = ({ student, onDelete }) => {
   const average =
     student.grades.reduce((sum, g) => sum + g.grade1, 0) / student.grades.length;
 
   return (
     <div className="student-record">
       <p>Student {student.studentId} : {student.fullName}</p>
+      <div className="student-info">
+        <button onClick={() => onDelete(student.studentId)}>Delete</button>
+        <button>Update</button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -32,18 +37,34 @@ const StudentRecord = ({ student }) => {
   );
 };
 
+// StudentList Component
 const StudentList = () => {
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const studentsPerPage = 1;
 
-  useEffect(() => {
+  const fetchStudents = () => {
     axios.get('https://localhost:7032/api/StudentGrades')
       .then(response => setStudents(response.data))
       .catch(error => console.error('Error fetching students:', error));
+  };
+
+  useEffect(() => {
+    fetchStudents();
   }, []);
 
-  // Pagination logic
+  const handleDeleteStudent = async (studentId) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this student?');
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`https://localhost:7032/api/Students/${studentId}`);
+      fetchStudents(); // Refresh the list after deletion
+    } catch (error) {
+      console.error('Error deleting student:', error);
+    }
+  };
+
   const indexOfLastStudent = currentPage * studentsPerPage;
   const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
   const currentStudents = students.slice(indexOfFirstStudent, indexOfLastStudent);
@@ -52,7 +73,11 @@ const StudentList = () => {
   return (
     <div id="students-container">
       {currentStudents.map(student => (
-        <StudentRecord key={student.studentId} student={student} />
+        <StudentRecord
+          key={student.studentId}
+          student={student}
+          onDelete={handleDeleteStudent}
+        />
       ))}
 
       <div className="pagination">

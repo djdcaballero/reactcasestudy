@@ -5,7 +5,7 @@ function Navbar() {
   return (
     <nav>
       <div className="nav-container">
-        <h1 className="logo">Name</h1>
+        <h1 className="logo">Maple Halls Colleges</h1>
         <ul className="nav-links">
           <li><a href="/">Home</a></li>
           <li><a href="/create-student">Add Record</a></li>

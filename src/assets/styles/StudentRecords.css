@@ -104,3 +104,10 @@
             font-family: "Open Sans", sans-serif;
             font-weight: 700;
         }
+
+        .student-info{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
