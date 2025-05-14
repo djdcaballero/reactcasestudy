@@ -26,7 +26,7 @@ const StudentRecord = ({ student }) => {
       </table>
       <p>Average Grade: {average.toFixed(2)}</p>
       <div className="button-container">
-        <button>Generate Report Card</button>
+        <button onClick={() => alert('Report Card Generated!')}>Generate Report Card</button>
       </div>
     </div>
   );

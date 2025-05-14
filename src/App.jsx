@@ -10,6 +10,7 @@ import Navbar from './components/Navbar.jsx'
 import AddStudents from './components/AddStudents/AddStudents.jsx'
 import Students from './components/StudentGrades.jsx'
 import Footer from './components/Footer.jsx';
+import NotFoundPage from './components/NotFoundPage.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -25,6 +26,7 @@ function App() {
           <Route path="/subjects" element={<Subjects />} />
           <Route path="/create-student" element={<AddStudents />} />
           <Route path="/students" element={<Students />} />
+          <Route path="*" element={<NotFoundPage />} />"
         </Routes>
         <Footer />
       </div>

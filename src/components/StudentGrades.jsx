@@ -6,7 +6,22 @@ const StudentGradesList = () => {
     const [students, setStudents] = useState([]);
     const [showUpdatePopup, setShowUpdatePopup] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
-    const [currentStudent, setCurrentStudent] = useState({ studentId: '', name: '', grades: [] });
+    const [currentStudent, setCurrentStudent] = useState({
+        studentId: '',
+        firstName: '',
+        lastName: '',
+        middleInitial: '',
+        dateOfBirth: '',
+        gender: '',
+        address: '',
+        email: '',
+        phoneNumber: '',
+        active: true,
+        modifiedDate: '',
+        grades: []
+    });
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchStudents();
@@ -28,10 +43,9 @@ const StudentGradesList = () => {
         }
     };
 
-
     const fetchStudentById = async (studentId) => {
         try {
-            const response = await axios.get(`https://localhost:7032/api/StudentGrades/${studentId}/grades`); 
+            const response = await axios.get(`https://localhost:7032/api/StudentGrades/${studentId}/grades`);
             setCurrentStudent(response.data);
         } catch (error) {
             console.error('Error fetching student:', error);
@@ -40,12 +54,34 @@ const StudentGradesList = () => {
 
     const handleUpdateStudent = async (event) => {
         event.preventDefault();
+
+        const cleanedStudent = {
+            ...currentStudent,
+            grades: currentStudent.grades.map(g => ({
+                gradeId: g.gradeId,
+                studentId: g.studentId,
+                subjectId: g.subjectId,
+                grade1: g.grade1,
+                modifiedDate: g.modifiedDate
+            }))
+        };
+
+        console.log('Sending cleaned student:', JSON.stringify(cleanedStudent, null, 2));
+
         try {
-            await axios.put(`https://localhost:7032/api/Students/${currentStudent.studentId}`, currentStudent);
+            const response = await axios.put(
+                `https://localhost:7032/api/Students/${currentStudent.studentId}`,
+                cleanedStudent
+            );
+            console.log('Update response:', response.data);
             fetchStudents();
             setShowUpdatePopup(false);
         } catch (error) {
-            console.error('Error updating student:', error);
+            console.error('Update failed:', error);
+            if (error.response) {
+                console.error('Status:', error.response.status);
+                console.error('Data:', error.response.data);
+            }
         }
     };
 
@@ -59,14 +95,10 @@ const StudentGradesList = () => {
         }
     };
 
+    const openAddPopup = () => navigate('/create-student');
 
-    const openAddPopup = () => {
-        navigate('/create-student');
-    };
-
-
-    const openUpdatePopup = (student) => {
-        setCurrentStudent(student);
+    const openUpdatePopup = async (student) => {
+        await fetchStudentById(student.studentId);
         setShowUpdatePopup(true);
     };
 
@@ -79,95 +111,94 @@ const StudentGradesList = () => {
     const closeDeletePopup = () => setShowDeletePopup(false);
 
     return (
-        <div>
-            <div className="main">
-                <div className="content-container">
-                    <h1>STUDENT LIST</h1>
-                    <label htmlFor="grade">Sort By:</label>
-                    <select>
-                        <option value="all">Ascending</option>
-                        <option value="all">Descending</option>
-                    </select>
-                    <input type="text" placeholder="Search by Student ID or Student Name" />
-                    <button className="search">Search</button>
-                    <button className="add" onClick={openAddPopup}>+ Add</button>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Student ID</th>
-                                <th>Name</th>
-                                <th>Computed Average</th>
-                                <th>Action</th>
+        <div className="main">
+            <div className="content-container">
+                <h1>STUDENT LIST</h1>
+                <button className="add" onClick={openAddPopup}>+ Add</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Computed Average</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {students.map(student => (
+                            <tr key={student.studentId}>
+                                <td>{student.studentId}</td>
+                                <td>{student.fullName}</td>
+                                <td>{student.averageGrade}</td>
+                                <td>
+                                    <button className="update" onClick={() => openUpdatePopup(student)}>Update</button>
+                                    <button className="delete" onClick={() => openDeletePopup(student)}>Delete</button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {students.map(student => (
-                                <tr key={student.studentId}>
-                                    <td>{student.studentId}</td>
-                                    <td>{student.fullName}</td>
-                                    <td>{student.averageGrade}</td>
-                                    <td>
-                                        <button className="view" onClick={() => fetchStudentById(student.studentId)}>View</button>
-                                        <button className="update" onClick={() => openUpdatePopup(student)}>Update</button>
-                                        <button className="delete" onClick={() => openDeletePopup(student)}>Delete</button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                        ))}
+                    </tbody>
+                </table>
 
-                    {showUpdatePopup && (
-                        <div id="updatePopup" className="popup-container">
-                            <div className="popup-content">
-                                <h3>Update Student</h3>
-                                <form onSubmit={handleUpdateStudent}>
-                                    <label htmlFor="studentName">Name:</label><br />
-                                    <input type="text" id="studentName" name="studentName" value={currentStudent.fullName} onChange={(e) => setCurrentStudent({ ...currentStudent, name: e.target.value })} /><br /><br />
-                                    {currentStudent.grades.map((grade, index) => (
-                                        <div key={index}>
-                                            <label htmlFor={`${grade.subject}Grade`}>{grade.subject}:</label><br />
-                                            <input type="number" id={`${grade.subject}Grade`} name={`${grade.subject}Grade`} value={grade.grade} onChange={(e) => {
+                {showUpdatePopup && (
+                    <div className="popup-container">
+                        <div className="popup-content">
+                            <h3>Update Student</h3>
+                            <form onSubmit={handleUpdateStudent}>
+                                <label>First Name:</label>
+                                <input type="text" value={currentStudent.firstName} onChange={(e) => setCurrentStudent({ ...currentStudent, firstName: e.target.value })} />
+
+                                <label>Last Name:</label>
+                                <input type="text" value={currentStudent.lastName} onChange={(e) => setCurrentStudent({ ...currentStudent, lastName: e.target.value })} />
+                                <h4>Grades</h4>
+                                {currentStudent.grades.map((grade, index) => (
+                                    <div key={index}>
+                                        <label>{grade.subjectName}:</label>
+                                        <input
+                                            type="number"
+                                            value={grade.grade1}
+                                            onChange={(e) => {
                                                 const newGrades = [...currentStudent.grades];
-                                                newGrades[index].grade = e.target.value;
+                                                newGrades[index].grade1 = Number(e.target.value);
                                                 setCurrentStudent({ ...currentStudent, grades: newGrades });
-                                            }} /><br /><br />
-                                        </div>
-                                    ))}
-                                    <button type="submit" className="submit">Save</button>
-                                    <button type="button" onClick={closeUpdatePopup} className="cancel">Cancel</button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
+                                            }}
+                                        />
+                                    </div>
+                                ))}
 
-                    {showDeletePopup && (
-                        <div id="deletePopup" className="popup-container">
-                            <div className="popup-content">
-                                <h3>Confirm Deletion</h3>
-                                <p>Are you sure you want to delete this student?</p>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Student ID</th>
-                                            <th>Name</th>
-                                            <th>Computed Average</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>{currentStudent.studentId}</td>
-                                            <td>{currentStudent.fullName}</td>
-                                            <td>{currentStudent.averageGrade}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <p>Deleting this record will permanently remove all associated data. This action cannot be undone.</p>
-                                <button id="confirmDelete" className="delete" onClick={() => handleDeleteStudent(currentStudent.studentId)}>Yes, Delete</button>
-                                <button onClick={closeDeletePopup} className="cancel">Cancel</button>
-                            </div>
+                                <button type="submit" className="submit">Save</button>
+                                <button type="button" onClick={closeUpdatePopup} className="cancel">Cancel</button>
+                            </form>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
+
+                {showDeletePopup && (
+                    <div className="popup-container">
+                        <div className="popup-content">
+                            <h3>Confirm Deletion</h3>
+                            <p>Are you sure you want to delete <strong>{currentStudent.fullName}</strong>?</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Computed Average</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{currentStudent.studentId}</td>
+                                        <td>{currentStudent.fullName}</td>
+                                        <td>{currentStudent.averageGrade}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p>This action cannot be undone.</p>
+                            <button className="delete" onClick={() => handleDeleteStudent(currentStudent.studentId)}>Yes, Delete</button>
+                            <button className="cancel" onClick={closeDeletePopup}>Cancel</button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
