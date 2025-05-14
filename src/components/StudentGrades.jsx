@@ -4,7 +4,6 @@ import axios from 'axios';
 
 const StudentGradesList = () => {
     const [students, setStudents] = useState([]);
-    const [showAddPopup, setShowAddPopup] = useState(false);
     const [showUpdatePopup, setShowUpdatePopup] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [currentStudent, setCurrentStudent] = useState({ studentId: '', name: '', grades: [] });
@@ -36,17 +35,6 @@ const StudentGradesList = () => {
             setCurrentStudent(response.data);
         } catch (error) {
             console.error('Error fetching student:', error);
-        }
-    };
-
-    const handleAddStudent = async (event) => {
-        event.preventDefault();
-        try {
-            await axios.post('https://localhost:7032/api/Students', currentStudent);
-            fetchStudents();
-            setShowAddPopup(false);
-        } catch (error) {
-            console.error('Error adding student:', error);
         }
     };
 
@@ -87,7 +75,6 @@ const StudentGradesList = () => {
         setShowDeletePopup(true);
     };
 
-    const closeAddPopup = () => setShowAddPopup(false);
     const closeUpdatePopup = () => setShowUpdatePopup(false);
     const closeDeletePopup = () => setShowDeletePopup(false);
 
@@ -127,20 +114,6 @@ const StudentGradesList = () => {
                             ))}
                         </tbody>
                     </table>
-
-                    {showAddPopup && (
-                        <div id="addPopup" className="popup-container">
-                            <div className="popup-content">
-                                <h3>Add Student</h3>
-                                <form onSubmit={handleAddStudent}>
-                                    <label htmlFor="studentName">Name:</label><br />
-                                    <input type="text" id="studentName" name="studentName" value={currentStudent.fullName} onChange={(e) => setCurrentStudent({ ...currentStudent, name: e.target.value })} /><br /><br />
-                                    <button type="submit" className="submit">Save</button>
-                                    <button type="button" onClick={closeAddPopup} className="cancel">Cancel</button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
 
                     {showUpdatePopup && (
                         <div id="updatePopup" className="popup-container">
