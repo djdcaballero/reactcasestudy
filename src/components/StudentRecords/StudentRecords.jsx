@@ -14,7 +14,7 @@ function StudentRecords() {
       <div className="main">
             <div class="content-container">
                 <h1>All Student Records</h1>
-                <Another />
+                <GetStudentRecords />
             </div>
           
       </div>

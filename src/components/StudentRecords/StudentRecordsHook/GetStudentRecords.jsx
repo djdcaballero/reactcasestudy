@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../../../assets/styles/StudentRecords.css';
 
 const StudentRecord = ({ student }) => {
+  const average =
+    student.grades.reduce((sum, g) => sum + g.grade1, 0) / student.grades.length;
+
   return (
     <div className="student-record">
       <p>Student {student.studentId} : {student.fullName}</p>
@@ -22,7 +24,7 @@ const StudentRecord = ({ student }) => {
           ))}
         </tbody>
       </table>
-      <p>Average Grade: {student.averageGrade !== null ? student.averageGrade.toFixed(2) : 'Loading...'}</p>
+      <p>Average Grade: {average.toFixed(2)}</p>
       <div className="button-container">
         <button>Generate Report Card</button>
       </div>
@@ -32,46 +34,44 @@ const StudentRecord = ({ student }) => {
 
 const StudentList = () => {
   const [students, setStudents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 1;
 
   useEffect(() => {
-    const fetchStudentsWithAverages = async () => {
-      try {
-        const gradesResponse = await axios.get('https://localhost:7032/api/StudentGrades');
-        const studentsWithGrades = gradesResponse.data;
-
-        // Fetch average for each student
-        const studentsWithAverages = await Promise.all(
-          studentsWithGrades.map(async (student) => {
-            try {
-              const avgResponse = await axios.get(`https://localhost:7032/api/StudentGrades/${student.studentId}/finalgrade`);
-              return {
-                ...student,
-                averageGrade: avgResponse.data.averageGrade
-              };
-            } catch (error) {
-              console.error(`Error fetching average for student ${student.studentId}:`, error);
-              return {
-                ...student,
-                averageGrade: null
-              };
-            }
-          })
-        );
-
-        setStudents(studentsWithAverages);
-      } catch (error) {
-        console.error('Error fetching student grades:', error);
-      }
-    };
-
-    fetchStudentsWithAverages();
+    axios.get('https://localhost:7032/api/StudentGrades')
+      .then(response => setStudents(response.data))
+      .catch(error => console.error('Error fetching students:', error));
   }, []);
+
+  // Pagination logic
+  const indexOfLastStudent = currentPage * studentsPerPage;
+  const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
+  const currentStudents = students.slice(indexOfFirstStudent, indexOfLastStudent);
+  const totalPages = Math.ceil(students.length / studentsPerPage);
 
   return (
     <div id="students-container">
-      {students.map(student => (
+      {currentStudents.map(student => (
         <StudentRecord key={student.studentId} student={student} />
       ))}
+
+      <div className="pagination">
+        <button
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+
+        <span> Page {currentPage} of {totalPages} </span>
+
+        <button
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
