@@ -15,11 +15,19 @@ const StudentGradesList = () => {
     const fetchStudents = async () => {
         try {
             const response = await axios.get('https://localhost:7032/api/StudentGrades');
-            setStudents(response.data);
+            const studentsData = response.data;
+
+            const studentsWithGrades = await Promise.all(studentsData.map(async (student) => {
+                const gradeResponse = await axios.get(`https://localhost:7032/api/StudentGrades/${student.studentId}/finalgrade`);
+                return { ...student, averageGrade: gradeResponse.data.averageGrade };
+            }));
+
+            setStudents(studentsWithGrades);
         } catch (error) {
             console.error('Error fetching students:', error);
         }
     };
+
 
     const fetchStudentById = async (studentId) => {
         try {
