@@ -108,6 +108,7 @@ const StudentGradesList = () => {
                                     <td>{student.averageGrade}</td>
                                     <td>
                                         <button className="view" onClick={() => fetchStudentById(student.studentId)}>View</button>
+                                        <button className="update" onClick={() => openUpdatePopup(student)}>Update</button>
                                         <button className="delete" onClick={() => openDeletePopup(student)}>Delete</button>
                                     </td>
                                 </tr>
