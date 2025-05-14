@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import '../assets/addStudents.css';
+import '../../assets/styles/addStudents.css';
 import GetSubjects from './AddStudentsHook/GetSubjects.jsx';
 import axios from 'axios';
 
@@ -70,18 +70,6 @@ function AddStudents() {
 
 	return (
 	<>
-		<nav>
-			<div className="nav-container">
-				<h1 className="logo">Name</h1>
-				<ul className="nav-links">
-					<li><a href="" className="active">Add Record</a></li>
-					<li><a href="">Student List</a></li>
-					<li><a href="">Subject List</a></li>
-					<li><a href="">Student Records</a></li>
-				</ul>
-			</div>
-		</nav>
-
 	<div className="main">
 		<div className="content-container">
 		<h1>Student Record System</h1>
