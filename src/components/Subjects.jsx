@@ -74,18 +74,6 @@ const SubjectList = () => {
 
     return (
         <div>
-            <nav>
-                <div className="nav-container">
-                    <h1 className="logo">Name</h1>
-                    <ul className="nav-links">
-                        <li><a href="">Add Record</a></li>
-                        <li><a href="">Student List</a></li>
-                        <li><a href="" className="active">Subject List</a></li>
-                        <li><a href="">Student Records</a></li>
-                    </ul>
-                </div>
-            </nav>
-
             <div className="main">
                 <div className="content-container">
                     <h1>Subject List</h1>
