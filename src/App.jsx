@@ -7,6 +7,7 @@ import Landing from './components/Landing.jsx'
 import StudentRecords from './components/StudentRecords/StudentRecords.jsx'
 import Subjects from './components/Subjects.jsx'
 import Navbar from './components/Navbar.jsx'
+import AddStudents from './components/AddStudents/AddStudents.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -20,6 +21,7 @@ function App() {
           <Route exact path="/" element={<Landing />} />
           <Route path="/student-records" element={<StudentRecords />} />
           <Route path="/subjects" element={<Subjects />} />
+          <Route path="/create-student" element={<AddStudents />} />
         </Routes>
       </div>
     </Router>

@@ -12,9 +12,9 @@ function StudentRecords() {
   return (
     <>
       <div className="main">
-            <div class="content-container">
+            <div className="content-container">
                 <h1>All Student Records</h1>
-                <Another />
+                <GetStudentRecords />
             </div>
           
       </div>
