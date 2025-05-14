@@ -8,6 +8,7 @@ import StudentRecords from './components/StudentRecords/StudentRecords.jsx'
 import Subjects from './Subjects.jsx'
 import Navbar from './components/Navbar.jsx'
 import AddStudents from './components/AddStudents/AddStudents.jsx'
+import Students from './components/Students.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -22,6 +23,7 @@ function App() {
           <Route path="/student-records" element={<StudentRecords />} />
           <Route path="/subjects" element={<Subjects />} />
           <Route path="/create-student" element={<AddStudents />} />
+          <Route path="/students" element={<Students />} />
         </Routes>
       </div>
     </Router>
