@@ -7,6 +7,7 @@ function Navbar() {
       <div className="nav-container">
         <h1 className="logo">Name</h1>
         <ul className="nav-links">
+          <li><a href="/">Home</a></li>
           <li><a href="/create-student">Add Record</a></li>
           <li><a href="/students">Student List</a></li>
           <li><a href="/subjects">Subject List</a></li>
