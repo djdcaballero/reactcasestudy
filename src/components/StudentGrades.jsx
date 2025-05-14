@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const StudentsList = () => {
+const StudentGradesList = () => {
     const [students, setStudents] = useState([]);
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [showUpdatePopup, setShowUpdatePopup] = useState(false);
@@ -14,7 +14,7 @@ const StudentsList = () => {
 
     const fetchStudents = async () => {
         try {
-            const response = await axios.get('https://localhost:7032/api/Students');
+            const response = await axios.get('https://localhost:7032/api/StudentGrades');
             setStudents(response.data);
         } catch (error) {
             console.error('Error fetching students:', error);
@@ -23,7 +23,7 @@ const StudentsList = () => {
 
     const fetchStudentById = async (studentId) => {
         try {
-            const response = await axios.get(`https://localhost:7032/api/Students/${studentId}`);
+            const response = await axios.get(`https://localhost:7032/api/StudentGrades/${studentId}/grades`); 
             setCurrentStudent(response.data);
         } catch (error) {
             console.error('Error fetching student:', error);
@@ -107,8 +107,8 @@ const StudentsList = () => {
                             {students.map(student => (
                                 <tr key={student.studentId}>
                                     <td>{student.studentId}</td>
-                                    <td>{student.name}</td>
-                                    <td>{student.computedAverage}</td>
+                                    <td>{student.fullName}</td>
+                                    <td>{student.averageGrade}</td>
                                     <td>
                                         <button className="view" onClick={() => fetchStudentById(student.studentId)}>View</button>
                                         <button className="delete" onClick={() => openDeletePopup(student)}>Delete</button>
@@ -124,7 +124,7 @@ const StudentsList = () => {
                                 <h3>Add Student</h3>
                                 <form onSubmit={handleAddStudent}>
                                     <label htmlFor="studentName">Name:</label><br />
-                                    <input type="text" id="studentName" name="studentName" value={currentStudent.name} onChange={(e) => setCurrentStudent({ ...currentStudent, name: e.target.value })} /><br /><br />
+                                    <input type="text" id="studentName" name="studentName" value={currentStudent.fullName} onChange={(e) => setCurrentStudent({ ...currentStudent, name: e.target.value })} /><br /><br />
                                     <button type="submit" className="submit">Save</button>
                                     <button type="button" onClick={closeAddPopup} className="cancel">Cancel</button>
                                 </form>
@@ -138,7 +138,7 @@ const StudentsList = () => {
                                 <h3>Update Student</h3>
                                 <form onSubmit={handleUpdateStudent}>
                                     <label htmlFor="studentName">Name:</label><br />
-                                    <input type="text" id="studentName" name="studentName" value={currentStudent.name} onChange={(e) => setCurrentStudent({ ...currentStudent, name: e.target.value })} /><br /><br />
+                                    <input type="text" id="studentName" name="studentName" value={currentStudent.fullName} onChange={(e) => setCurrentStudent({ ...currentStudent, name: e.target.value })} /><br /><br />
                                     {currentStudent.grades.map((grade, index) => (
                                         <div key={index}>
                                             <label htmlFor={`${grade.subject}Grade`}>{grade.subject}:</label><br />
@@ -172,8 +172,8 @@ const StudentsList = () => {
                                     <tbody>
                                         <tr>
                                             <td>{currentStudent.studentId}</td>
-                                            <td>{currentStudent.name}</td>
-                                            <td>{currentStudent.computedAverage}</td>
+                                            <td>{currentStudent.fullName}</td>
+                                            <td>{currentStudent.averageGrade}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -189,4 +189,4 @@ const StudentsList = () => {
     );
 };
 
-export default StudentsList;
+export default StudentGradesList;

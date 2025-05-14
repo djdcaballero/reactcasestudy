@@ -8,7 +8,7 @@ import StudentRecords from './components/StudentRecords/StudentRecords.jsx'
 import Subjects from './Subjects.jsx'
 import Navbar from './components/Navbar.jsx'
 import AddStudents from './components/AddStudents/AddStudents.jsx'
-import Students from './components/Students.jsx'
+import Students from './components/StudentGrades.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
