@@ -46,19 +46,33 @@
             font-weight: 700;
         }
 
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px; /* space between buttons */
+            margin-top: 10px;
+        }
 
-        .student-record button {
+        .delete-btn, .update-btn, .generate-btn {
             padding: 10px;
-            background-color: rgb(216, 52, 52);
             border: none;
             border-radius: 8px;
             color: white;
-            display: block;
-            margin-left: auto;
-            margin-right: 0;
             cursor: pointer;
             font-family: "Open Sans", sans-serif;
             font-weight: 700;
+        }
+
+        .delete-btn {
+            background-color: rgb(216, 52, 52);
+        }
+
+        .update-btn {
+            background-color: rgb(42, 153, 42);
+        }
+
+        .generate-btn{
+            background-color: rgb(76, 73, 230);
         }
 
         table {

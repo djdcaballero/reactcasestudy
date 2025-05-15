@@ -2,17 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 // StudentRecord Component
-const StudentRecord = ({ student, onDelete }) => {
+const StudentRecord = ({ student, onDelete, onUpdate }) => {
   const average =
     student.grades.reduce((sum, g) => sum + g.grade1, 0) / student.grades.length;
 
   return (
     <div className="student-record">
       <p>Student {student.studentId} : {student.fullName}</p>
-      <div className="student-info">
-        <button onClick={() => onDelete(student.studentId)}>Delete</button>
-        <button>Update</button>
-      </div>
       <table>
         <thead>
           <tr>
@@ -31,7 +27,9 @@ const StudentRecord = ({ student, onDelete }) => {
       </table>
       <p>Average Grade: {average.toFixed(2)}</p>
       <div className="button-container">
-        <button onClick={() => alert('Report Card Generated!')}>Generate Report Card</button>
+        <button class="generate-btn" onClick={() => alert('Report Card Generated!')}>Generate Report Card</button>
+        <button class="update-btn" onClick={() => onUpdate(student)}>Update</button>
+        <button class="delete-btn" onClick={() => onDelete(student.studentId)}>Delete</button>
       </div>
     </div>
   );
@@ -41,6 +39,8 @@ const StudentRecord = ({ student, onDelete }) => {
 const StudentList = () => {
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showUpdatePopup, setShowUpdatePopup] = useState(false);
+  const [currentStudent, setCurrentStudent] = useState(null);
   const studentsPerPage = 1;
 
   const fetchStudents = () => {
@@ -59,10 +59,58 @@ const StudentList = () => {
 
     try {
       await axios.delete(`https://localhost:7032/api/Students/${studentId}`);
-      fetchStudents(); // Refresh the list after deletion
+      fetchStudents();
     } catch (error) {
       console.error('Error deleting student:', error);
     }
+  };
+
+const handleUpdateStudent = async (e) => {
+  e.preventDefault();
+
+  const updatedStudent = {
+    ...currentStudent,
+    fullName: `${currentStudent.firstName} ${currentStudent.lastName}`,
+  };
+
+  try {
+    await axios.put(`https://localhost:7032/api/Students/${currentStudent.studentId}`, updatedStudent);
+    setShowUpdatePopup(false);
+    setCurrentStudent(null);
+    fetchStudents();
+  } catch (error) {
+    console.error('Error updating student:', error);
+  }
+};
+
+const openUpdatePopup = (student) => {
+  const nameParts = student.fullName.trim().split(' ');
+
+  let firstName = '';
+  let lastName = '';
+
+  if (nameParts.length === 2) {
+    [firstName, lastName] = nameParts;
+  } else if (nameParts.length >= 3) {
+    firstName = nameParts[0];
+    lastName = nameParts.slice(2).join(' ');
+  } else {
+    firstName = student.fullName;
+  }
+
+  const studentWithSplitName = {
+    ...student,
+    firstName,
+    lastName,
+  };
+
+  setCurrentStudent(studentWithSplitName);
+  setShowUpdatePopup(true);
+};
+
+  const closeUpdatePopup = () => {
+    setShowUpdatePopup(false);
+    setCurrentStudent(null);
   };
 
   const indexOfLastStudent = currentPage * studentsPerPage;
@@ -77,6 +125,7 @@ const StudentList = () => {
           key={student.studentId}
           student={student}
           onDelete={handleDeleteStudent}
+          onUpdate={openUpdatePopup}
         />
       ))}
 
@@ -87,9 +136,7 @@ const StudentList = () => {
         >
           Previous
         </button>
-
         <span> Page {currentPage} of {totalPages} </span>
-
         <button
           onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
@@ -97,6 +144,52 @@ const StudentList = () => {
           Next
         </button>
       </div>
+
+      {showUpdatePopup && currentStudent && (
+        <div className="popup-container">
+          <div className="popup-content">
+            <h3>Update Student</h3>
+            <form onSubmit={handleUpdateStudent}>
+              <label>First Name:</label>
+              <input
+                type="text"
+                value={currentStudent.firstName}
+                onChange={(e) =>
+                  setCurrentStudent({ ...currentStudent, firstName: e.target.value })
+                }
+              />
+
+              <label>Last Name:</label>
+              <input
+                type="text"
+                value={currentStudent.lastName}
+                onChange={(e) =>
+                  setCurrentStudent({ ...currentStudent, lastName: e.target.value })
+                }
+              />
+
+              <h4>Grades</h4>
+              {currentStudent.grades.map((grade, index) => (
+                <div key={index}>
+                  <label>{grade.subjectName}:</label>
+                  <input
+                    type="number"
+                    value={grade.grade1}
+                    onChange={(e) => {
+                      const newGrades = [...currentStudent.grades];
+                      newGrades[index].grade1 = Number(e.target.value);
+                      setCurrentStudent({ ...currentStudent, grades: newGrades });
+                    }}
+                  />
+                </div>
+              ))}
+
+              <button type="submit" className="submit">Save</button>
+              <button type="button" onClick={closeUpdatePopup} className="cancel">Cancel</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
