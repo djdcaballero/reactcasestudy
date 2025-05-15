@@ -45,12 +45,23 @@ const StudentGradesList = () => {
 
     const fetchStudentById = async (studentId) => {
         try {
-            const response = await axios.get(`https://localhost:7032/api/StudentGrades/${studentId}/grades`);
-            setCurrentStudent(response.data);
+            const gradesResponse = await axios.get(`https://localhost:7032/api/StudentGrades/${studentId}/grades`);
+            const gradesData = gradesResponse.data;
+
+            const studentResponse = await axios.get(`https://localhost:7032/api/Students/${studentId}`);
+            const studentDetails = studentResponse.data;
+
+            const mergedStudent = {
+                ...studentDetails,
+                grades: gradesData.grades || []
+            };
+
+            setCurrentStudent(mergedStudent);
         } catch (error) {
             console.error('Error fetching student:', error);
         }
     };
+
 
     const handleUpdateStudent = async (event) => {
         event.preventDefault();
@@ -119,9 +130,12 @@ const StudentGradesList = () => {
                     <thead>
                         <tr>
                             <th>Student ID</th>
-                            <th>Name</th>
-                            <th>Computed Average</th>
-                            <th>Action</th>
+                            <th>Full Name</th>
+                            <th>Average Grade</th>
+                            <th>Address</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -130,6 +144,9 @@ const StudentGradesList = () => {
                                 <td>{student.studentId}</td>
                                 <td>{student.fullName}</td>
                                 <td>{student.averageGrade}</td>
+                                <td>{student.address || 'N/A'}</td>
+                                <td>{student.email || 'N/A'}</td>
+                                <td>{student.phoneNumber || 'N/A'}</td>
                                 <td>
                                     <button className="update" onClick={() => openUpdatePopup(student)}>Update</button>
                                     <button className="delete" onClick={() => openDeletePopup(student)}>Delete</button>
@@ -137,6 +154,7 @@ const StudentGradesList = () => {
                             </tr>
                         ))}
                     </tbody>
+
                 </table>
 
                 {showUpdatePopup && (
